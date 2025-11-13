@@ -76,7 +76,7 @@ let productCategoryStatistic ; // 全產品類別營收比重資料
 let productItemStatistic ; // 全產品類別營收比重資料
 let chartGraphic; // 把圖表擺在全域變數，可控制載入 or 純陣列更新
 
-
+/**========{全域變數}結束========== */
 
 // api：取得訂單列表(get) 
 async function apiGetOrderList(){
@@ -450,11 +450,6 @@ function clickOrderTable() {
                 return;
             }
 
-
-
-            
-
-
         }
 
     });
@@ -605,13 +600,9 @@ function changeChartType(){
             const selectedStatistic = clickElement.id;
 
             if (selectedStatistic === 'radioProductCategory'){
-                console.log('切換到類別')
-                console.log('productCategoryStatistic', productCategoryStatistic)
                 sectionTitle.innerHTML = '全產品類別營收比重'
                 createStatisticChart(productCategoryStatistic);
             } else if (selectedStatistic === 'radioProductItem') {
-                console.log('切換到全品項')
-                console.log('productItemStatistic = ',productItemStatistic)
                 sectionTitle.innerHTML = '全品項營收比重'
                 createStatisticChart(productItemStatistic);
             }

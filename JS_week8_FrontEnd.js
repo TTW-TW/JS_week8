@@ -71,10 +71,10 @@
 */
 
 /**練習
- * async、await
- * sweetalert2 toast 取代 console.log(error)
- * 返還的陣列利用 map 取代 forEach 直接承接樣板結果(記得join(''))
- * 加入 spinner 元件，呈現loading，避免使用者再次去觸發api
+ * ✅async、await
+ * ✅sweetalert2 toast 取代 console.log(error)
+ * ✅返還的陣列利用 map 取代 forEach 直接承接樣板結果(記得join(''))
+ * ✅加入 spinner 元件，呈現loading，避免使用者再次去觸發api
  */
 
 
@@ -156,9 +156,8 @@ async function apiGetProduct(){
 // 函式：渲染前端商品清單<樣板> (傳入的形式須為response.data.products)
 function renderProductList(inputProductData){ 
   productWrap.innerHTML = ''
-  let productCardLiItem = '';
 
-  inputProductData.forEach(element => {
+  const productCardLiItem = inputProductData.map(element => {
     const {
       title,
       description,
@@ -169,7 +168,7 @@ function renderProductList(inputProductData){
       id: productId,
     } = element;
 
-    let newCard = `<li class="productCard">
+    return`<li class="productCard">
               <h4 class="productType">新品</h4>
               <img src= ${images} alt="">
               <a href="#shoppingCart" class="addCardBtn" id = ${productId}>加入購物車</a>
@@ -178,10 +177,9 @@ function renderProductList(inputProductData){
               <p class="nowPrice">NT$ ${Number(price).toLocaleString('en-US')}</p>
           </li>`
     
-          productCardLiItem += newCard;
   });
 
-  productWrap.insertAdjacentHTML('beforeend', productCardLiItem);
+  productWrap.insertAdjacentHTML('beforeend', productCardLiItem.join(''));
 }; // end of renderProductList
 
 // 函式：渲染前端商品類別下拉選單  (傳入的形式須為response.data.products)
@@ -562,10 +560,8 @@ async function apiPatchProductQuantity(cartId, quantity) {
     }
   };
   try {
-    console.log('正在執行編輯購物車api;')
     const response = await axios.patch(apiUrl, apiData);
     apiCartData = response.data;
-    console.log('apiCartData = ', apiCartData)
     renderCartList(apiCartData); // 執行 ## 函式：渲染前端購物車清單 
     toggleDeleteAllCart(apiCartData); // 執行 ## 函式：購物車為空時，將清空購物車按鈕設為disable 
     
@@ -632,9 +628,6 @@ function clickShoppingCartAction(){
     // 監聽：點擊「刪除一筆商品」
     if (clickedElement.classList.contains('discardThisBtn')) {
       const cartId = clickedElement.id;
-
-      console.log(apiCartData["carts"])
-
       await apiDeleteCertainProduct(cartId); // api：刪除購物車內特定產品
       return;
 
