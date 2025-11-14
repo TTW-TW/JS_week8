@@ -110,8 +110,6 @@ const shoppingCartTable =  document.querySelector('.shoppingCart-table'); // 購
 
 /**========{全域變數}結束========== */
 
-
-
 // api：取得產品列表(get)，會返還產品物件陣列 
 // 返還後已整理為 response.data.products
 async function apiGetProduct(){

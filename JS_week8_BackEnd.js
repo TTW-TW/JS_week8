@@ -4,13 +4,20 @@
  *     執行 ## 函式：渲染前端訂單介面 ✅ renderOrderList(apiGetOrderList);
  *     執行 ## 函式：生成c3.全產品類別營收比重資料 ✅
  *     執行 ## 函式：生成c3.全產品類別營收比重圓餅圖 ✅
+ *     執行 ## 函式：根據當前的統計方式決定要生成何種圓餅圖 ✅
  * api：修改訂單狀態(put) ✅ apiPutPaidStatus(orderId, paidToggle)，返還response.data.orders
- *      執行 ## 函式：渲染前端訂單介面
+ *      執行 ## 函式：渲染前端訂單介面✅
  * api：刪除全部訂單(delete) ✅ apiDeleteAllOrder()，返還response.data.orders(應為空)
  *      執行 ## 函式：渲染前端訂單介面 ✅
+ *      執行 ## 函式：生成c3.全產品類別營收比重資料 ✅
+ *      執行 ## 函式：生成c3.全產品類別營收比重圓餅圖 ✅
+ *      執行 ## 函式：根據當前的統計方式決定要生成何種圓餅圖 ✅
  *      執行 ## 函式：訂單表格為空時，將清除全部訂單按鈕disable✅
  * api：刪除特定訂單(delete)  ✅ apiDeleteCertainOrder(orderID)，返還response.data.orders
- *     執行 ## 函式：渲染前端訂單介面 ✅
+ *      執行 ## 函式：渲染前端訂單介面 ✅
+ *      執行 ## 函式：生成c3.全產品類別營收比重資料 ✅
+ *      執行 ## 函式：生成c3.全產品類別營收比重圓餅圖 ✅
+ *      執行 ## 函式：根據當前的統計方式決定要生成何種圓餅圖 ✅
  *      執行 ## 函式：訂單表格為空時，將清除全部訂單按鈕disable✅
  *     
  * 函式：渲染前端訂單介面 (input：response.data.orders) ✅ renderOrderList(apiGetOrderList);
@@ -18,17 +25,23 @@
  * 函式：確認視窗 ✅showConfirmWindows(title, text, confirmText = "確認", icon = "info")
  * 函式：訂單表格為空時，將清除全部訂單按鈕disable ✅toggleDeleteAllOrder(latestCartData)
  * 
- * 監聽：切換統計方式 ⏳ changeChartType()
+ * 監聽：切換統計方式 ✅  changeChartType()
+ *      執行 ## 函式：根據當前的統計方式決定要生成何種圓餅圖 ✅   
  * 監聽：清除全部訂單 ✅ clickDeleteAllOrder()
+ *      執行 ## api：刪除全部訂單(delete)
  * 
  * // 訂單列表共同監聽器 clickOrderTable()
- * 監聽：刪除特定訂單  ✅ 
+ * 監聽：刪除特定訂單  ✅
+ *      執行 ##  api：刪除特定訂單✅
  * 監聽：修改訂單狀態(輸入訂單id + 已付款/未付款) ✅ 
+ *      執行 ## api：修改訂單狀態✅
  * 
  * 【統計圖表】
  * 函式：生成c3.全產品類別營收比重資料(productCategoryStatistic) ✅ updateProductCategoryStatistic(apiOrderData)
  * 函式：生成c3.全產品類別營收比重圓餅圖 ✅ createProductCategoryStatistic(productCategoryStatistic); 
- * 函式：生成c3.全品項營收比重資料 (productItemStatistic) （圓餅圖，做全品項營收比重，類別含四項，篩選出前三名營收品項，其他 4~8 名都統整為「其它」）
+ * 函式：生成c3.圓餅圖   (productItemStatistic) ✅createStatisticChart(statisticData)
+ * 函式：根據當前的統計方式決定要生成何種圓餅圖 ⏳currentChartType()
+ *      執行 ## 函式：生成c3.圓餅圖
  * 
  */
 
@@ -84,10 +97,11 @@ async function apiGetOrderList(){
 
     try{
         const response = await axios.get(apiUrl, config);
-        apiOrderData = response.data.orders;
-        renderOrderList(apiOrderData); //     執行 ## 函式：渲染前端訂單介面
+        apiOrderData = response.data.orders;      
         await updateProductCategoryStatistic(apiOrderData); //函式：生成c3.全產品類別營收比重資料(productCategoryStatistic)
         await updateProductItemStatistic(apiOrderData); // 函式：生成c3.全品項營收比重資料 (productItemStatistic)
+        renderOrderList(apiOrderData); //     執行 ## 函式：渲染前端訂單介面
+        currentChartType(); // 執行 ## 函式：根據當前的統計方式決定要生成何種圓餅圖
         return apiOrderData ;
     } catch (error) {
 
@@ -232,6 +246,7 @@ function renderOrderList(apiOrderData){
     
     orderList += orderListContent.join('');
     orderPageTable.insertAdjacentHTML('beforeend', orderList );
+    
 
 
 }; //end of renderOrderList(apiGetOrderList)
@@ -249,9 +264,11 @@ async function apiDeleteCertainOrder(orderId){
         });
 
         apiOrderData = response.data.orders;
+        await updateProductCategoryStatistic(apiOrderData); //函式：生成c3.全產品類別營收比重資料(productCategoryStatistic)
+        await updateProductItemStatistic(apiOrderData); // 函式：生成c3.全品項營收比重資料 (productItemStatistic)
+        currentChartType(); // 執行 ## 函式：根據當前的統計方式決定要生成何種圓餅圖
         renderOrderList(apiOrderData); //     執行 ## 函式：渲染前端訂單介面
         toggleDeleteAllOrder(apiOrderData); // 執行  ## 函式：訂單表格為空時，將清除全部訂單按鈕disable 
-        return apiOrderData;
         return apiOrderData;
 
     } catch (error) {
@@ -292,6 +309,9 @@ async function apiDeleteAllOrder(){
 
         apiOrderData = response.data.orders;
         renderOrderList(apiOrderData); //     執行 ## 函式：渲染前端訂單介面
+        await updateProductCategoryStatistic(apiOrderData); //函式：生成c3.全產品類別營收比重資料(productCategoryStatistic)
+        await updateProductItemStatistic(apiOrderData); // 函式：生成c3.全品項營收比重資料 (productItemStatistic)
+        currentChartType(); // 執行 ## 函式：根據當前的統計方式決定要生成何種圓餅圖
         toggleDeleteAllOrder(apiOrderData); // 執行  ## 函式：訂單表格為空時，將清除全部訂單按鈕disable 
         return apiOrderData;
 
@@ -597,18 +617,43 @@ function changeChartType(){
     chartWrapTitle.addEventListener('change', event => {
         const clickElement = event.target;
         if  (clickElement.type === 'radio' &&  clickElement.name === 'radioStatistic'){
+            currentChartType(); // 函式：根據當前的統計方式決定要生成何種圓餅圖 
+
+            /** 
             const selectedStatistic = clickElement.id;
 
             if (selectedStatistic === 'radioProductCategory'){
                 sectionTitle.innerHTML = '全產品類別營收比重'
                 createStatisticChart(productCategoryStatistic);
             } else if (selectedStatistic === 'radioProductItem') {
+                console.log(selectedStatistic)
                 sectionTitle.innerHTML = '全品項營收比重'
                 createStatisticChart(productItemStatistic);
             }
+            */
         }
     });
 }; // end of changeChartType()
+
+// 函式：根據當前的統計方式決定要生成何種圓餅圖 
+function currentChartType(){
+    // 利用css偽元素確認被選中的選項
+    const clickElement = document.querySelector('input[name="radioStatistic"]:checked');
+    
+    if (clickElement){
+        const selectedStatistic = clickElement.id;
+        if (selectedStatistic === 'radioProductCategory'){
+            sectionTitle.innerHTML = '全產品類別營收比重'
+            createStatisticChart(productCategoryStatistic);
+        } else if (selectedStatistic === 'radioProductItem') {
+            sectionTitle.innerHTML = '全品項營收比重'
+            createStatisticChart(productItemStatistic);
+        }
+    } else {
+        return null;
+    }
+
+}; //end of currentChartType()
 
 
 /** =====主程式 + 初始化======= */
